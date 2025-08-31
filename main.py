@@ -29,14 +29,14 @@ cat_imgs = [
     pygame.transform.scale(pygame.image.load("Cat4.png"), (40, 40))
 ]
 enemy_img = pygame.transform.scale(pygame.image.load("Enemy.png"), (45, 45))
-bullet_img = pygame.transform.scale(pygame.image.load("gun.png"), (10, 20))
+bullet_img = pygame.transform.scale(pygame.image.load("gun.png"), (30, 40))
 
 win_img = pygame.transform.scale(pygame.image.load("win.jpg"), (WIDTH, HEIGHT))
 lose_img = pygame.transform.scale(pygame.image.load("lose.jpg"), (WIDTH, HEIGHT))
 
 # buttonnnn
-btn_game1 = pygame.transform.scale(pygame.image.load("btn_game1.png"), (100, 100))
-btn_game2 = pygame.transform.scale(pygame.image.load("btn_game2.png"), (100,100))
+btn_game1 = pygame.transform.scale(pygame.image.load("btn_game1.png"), (200, 200))
+btn_game2 = pygame.transform.scale(pygame.image.load("btn_game2.png"), (200,200))
 home_button_img = pygame.transform.scale(pygame.image.load("home_button.png"), (100,100))
 
 # sound effect
@@ -52,13 +52,17 @@ def play_backsound():
     pygame.mixer.music.set_volume(0.5)
     pygame.mixer.music.play(-1)
 
+def play_home():
+    pygame.mixer.music.load("home_bck.mp3")
+    pygame.mixer.music.set_volume(0.5)
+    pygame.mixer.music.play(-1)
 # falling cat
 def play_game1():
     global state
     score = 0
     lives = 5
     player_rect = player_img.get_rect(center=(WIDTH//2, HEIGHT-60))
-    player_speed = 7
+    player_speed = 8
     facing_left = False
 
     objects, enemies, bullets = [], [], []
@@ -243,7 +247,7 @@ def play_game2():
         # hapus objek
         current_objs = [obj for obj in current_objs if now - obj[3] < obj_lifetime]
 
-        # spawn object baru
+        # spawn
         if now - obj_timer > obj_duration:
             spawn_count = random.randint(2, 3)
             available_positions = positions.copy()
@@ -283,7 +287,7 @@ def play_game2():
         screen.blit(lives_text, (WIDTH-150, 50))
         screen.blit(timer_text, (WIDTH//2 - 40, 10))
 
-        # kondisi menang/kalah
+        #menang/kalah
         if remaining <= 0: 
             pygame.mixer.music.stop()
             if score >= 20: 
@@ -305,12 +309,20 @@ def play_game2():
 # HHHOOOOMEEEEE
 state = "HOME"
 clock = pygame.time.Clock()
-
+play_home()
 while True:
     if state == "HOME":
         screen.blit(bg_home, (0,0))
-        screen.blit(btn_game1, (WIDTH//2 - 90, HEIGHT//2 - 80))
-        screen.blit(btn_game2, (WIDTH//2 - 90, HEIGHT//2 + 20))
+
+        # tombol
+        btn_width, btn_height = 200, 200
+        btn_y = HEIGHT//2 - btn_height//2 
+        btn1_x = WIDTH//4 - btn_width//2  
+        btn2_x = WIDTH*3//4 - btn_width//2 
+
+        screen.blit(btn_game1, (btn1_x, btn_y))
+        screen.blit(btn_game2, (btn2_x, btn_y))
+
         pygame.display.flip()
 
         for event in pygame.event.get():
@@ -318,9 +330,11 @@ while True:
                 pygame.quit(); sys.exit()
             if event.type == pygame.MOUSEBUTTONDOWN:
                 x, y = event.pos
-                if (WIDTH//2 - 90 <= x <= WIDTH//2 + 90) and (HEIGHT//2 - 80 <= y <= HEIGHT//2 - 20):
+                # tombol kiri (Game1)
+                if (btn1_x <= x <= btn1_x + btn_width) and (btn_y <= y <= btn_y + btn_height):
                     state = "GAME1"
-                if (WIDTH//2 - 90 <= x <= WIDTH//2 + 90) and (HEIGHT//2 + 20 <= y <= HEIGHT//2 + 80):
+                # tombol kanan (Game2)
+                if (btn2_x <= x <= btn2_x + btn_width) and (btn_y <= y <= btn_y + btn_height):
                     state = "GAME2"
 
     elif state == "GAME1":
